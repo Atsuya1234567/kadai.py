@@ -175,20 +175,20 @@ def game_main():
 			cvs.delete("OVER")
 			index=0
 	cvs.delete("INFO")
-	draw_txt(f"スコア {score}",160,60,32,"white","INFO")
-	draw_txt(f"ハイスコア {hisc}",450,60,32,"white","INFO")
+	draw_txt(f"得点{score}",763,690,32,"white","INFO")
+	draw_txt(f"最高得点{hisc}",752,740,32,"white","INFO")
 	if tsugi > 0:
-		cvs.create_image(752,128,image=img_neko[tsugi],tag="INFO")
+		cvs.create_image(768,150,image=img_neko[tsugi],tag="INFO")
 	root.after(100,game_main)
 root = tk.Tk()
-root.title("落ち物パズル ねこねこ")
+root.title("リアぷよ")
 root.resizable(False, False)
 root.bind("<Motion>", mouse_move)
 root.bind("<ButtonPress>", mouse_press)
 cvs = tk.Canvas(root, width=912, height=768)
 cvs.pack()
 bg = tk.PhotoImage(file="u.png")
-cursor = tk.PhotoImage(file="neko_cursor.png")
+cursor = tk.PhotoImage(file="c.png")
 img_neko = [
 	None,
 	tk.PhotoImage(file="g.png"),
