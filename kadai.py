@@ -1,111 +1,222 @@
-import pygame
+import tkinter as tk
 import random
 
-# 画面サイズ
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
-CELL_SIZE = 40
+index=0 #ゲームの進行状況を管理
+timer=0 #ゲームオーバー時に時間に5秒止める処理に使う
+score=0 #点数を管理
+hisc=1000 #ハイスコア
+difficulty=0 #難易度
+tsugi=0 #次に出てくるネコの番号
 
-# ゲームフィールドのサイズ
-FIELD_WIDTH = 6
-FIELD_HEIGHT = 12
+cursor_x = 0
+cursor_y = 0
+mouse_x = 0
+mouse_y = 0
+mouse_c = 0
 
-# ぷよのサイズ
-PUYO_SIZE = 40
+def mouse_move(e):
+	global mouse_x, mouse_y
+	mouse_x = e.x
+	mouse_y = e.y
+	
+def mouse_press(e):
+		global mouse_c
+		mouse_c = 1
 
-# ぷよの色
-PuyoColors = ["red", "green", "blue", "yellow", "purple"]
+neko = []
+check = []
+for i in range(10):
+	neko.append([0, 0, 0, 0, 0, 0, 0, 0])
+	check.append([0, 0, 0, 0, 0, 0, 0, 0])
 
-# ぷよのスプライト
-class Puyo(pygame.sprite.Sprite):
-    def __init__(self, color, x, y):
-        super().__init__()
-        self.color = color
-        self.image = pygame.Surface((PUYO_SIZE, PUYO_SIZE))
-        self.image.fill(pygame.Color(color))
-        self.rect = self.image.get_rect(topleft=(x * CELL_SIZE, y * CELL_SIZE))
-        self.falling = True
+def draw_neko():
+	cvs.delete("NEKO")
+	for y in range(10):
+		for x in range(8):
+			if neko[y][x] > 0:
+				cvs.create_image(x*72+60, y*72+60, image=img_neko[neko[y][x]], tag="NEKO")
 
-    def move_down(self):
-        if self.rect.y + CELL_SIZE < SCREEN_HEIGHT:
-            self.rect.y += CELL_SIZE
-        else:
-            self.falling = False
+def check_neko():
+	#盤面のコピー
+	for y in range(10):
+		for x in range(8):
+			check[y][x] = neko[y][x]
 
-    def move_left(self):
-        if self.rect.x - CELL_SIZE >= 0:
-            self.rect.x -= CELL_SIZE
+	#縦方向3並びチェック
+	for y in range(1,9):
+		for x in range(8):
+			if check[y][x] > 0:
+				if check[y-1][x] == check[y][x] == check[y+1][x]:
+					neko[y-1][x] = neko[y][x] = neko[y+1][x] = 7
+	#横方向3並びチェック
+	for y in range(10):
+		for x in range(1,7):
+			if check[y][x] > 0:
+				if check[y][x-1] == check[y][x] == check[y][x+1]:
+					neko[y][x-1] = neko[y][x] = neko[y][x+1] = 7
+	#ななめ方向3並びチェック
+	for y in range(1,9):
+		for x in range(1,7):
+			if check[y][x] > 0:
+				if check[y-1][x-1] == check[y][x] == check[y+1][x+1]:					neko[y-1][x-1] = neko[y][x] = neko[y+1][x+1] = 7
+				if check[y-1][x+1] == check[y][x] == check[y+1][x-1]:
+					neko[y-1][x+1] = neko[y][x] = neko[y+1][x-1] = 7
 
-    def move_right(self):
-        if self.rect.x + CELL_SIZE < SCREEN_WIDTH:
-            self.rect.x += CELL_SIZE
+# 揃ったマスを空白にし、揃ったマスの個数を返す
+def sweep_neko():
+	num = 0
+	for y in range(10):
+		for x in range(8):
+			if neko[y][x] == 7:
+				neko[y][x] = 0
+				num += 1
+	return num
 
-    def rotate(self):
-        if self.color == "yellow":
-            center = self.rect.center
-            self.image = pygame.transform.rotate(self.image, -90)
-            self.rect = self.image.get_rect(center=center)
-        elif self.color == "purple":
-            pass  # パープルぷよは回転しない
 
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
+# すべてのマスに対して下に１個移動できるかをチェックし、
+# 移動できた場合は下に移動する。
+# 移動できた場合はTrueを返す
+def drop_neko():
+	flg = False
+	for y in range(8,-1,-1):
+		for x in range(8):
+			if neko[y][x] != 0 and neko[y+1][x] == 0:
+				neko[y+1][x] = neko[y][x]
+				neko[y][x]=0
+				flg = True
+	return flg
 
-# ゲームの初期化
-pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-clock = pygame.time.Clock()
+# 最上段にネコマスがあったらTrueを返す
+def over_neko():
+	for x in range(8):
+		if neko[0][x] > 0:
+			return True
+	return False
 
-# ぷよのグループ
-puyo_group = pygame.sprite.Group()
+# 最上段にランダムでネコをセットする(0は空欄)
+def set_neko():
+	for x in range(8):
+		#neko[0][x] = random.randint(0,6)
+		neko[0][x] = random.randint(0,difficulty)
 
-# フィールドの初期化
-field = [[None for _ in range(FIELD_WIDTH)] for _ in range(FIELD_HEIGHT)]
+# 文言を表示する
+def draw_txt(txt,x,y,size,color,tg):
+	fnt = ("Times New Roman" ,size,"bold")
+	#2ピクセルずらして影を描画
+	cvs.create_text(x+2,y+2,text=txt,fill="black",font=fnt,tag=tg)
+	cvs.create_text(x,y,text=txt,fill=color,font=fnt,tag=tg)
 
-# メインループ
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                for puyo in puyo_group.sprites():
-                    puyo.move_left()
-            if event.key == pygame.K_RIGHT:
-                for puyo in puyo_group.sprites():
-                    puyo.move_right()
-            if event.key == pygame.K_SPACE:
-                for puyo in puyo_group.sprites():
-                    puyo.rotate()
+def game_main():
+	#global index,timer,score,tsugi
+	global index,timer,score,tsugi,hisc,difficulty
+	global cursor_x,cursor_y,mouse_c
+	if index == 0: # タイトルロゴ
+		draw_txt("ねこねこ",312,240,100,"violet","TITLE")
+		cvs.create_rectangle(168, 384, 456, 456, fill="skyblue", width=0, tag="TITLE")
+		draw_txt("Easy", 312, 420, 40, "white", "TITLE")
+		cvs.create_rectangle(168, 528, 456, 600, fill="lightgreen", width=0, tag="TITLE")
+		draw_txt("Normal", 312, 564, 40, "white", "TITLE")
+		cvs.create_rectangle(168, 672, 456, 744, fill="orange", width=0, tag="TITLE")
+		draw_txt("Hard", 312, 708, 40, "white", "TITLE")
+		index = 1
+		mouse_c =0
+	elif index == 1: # タイトル画面 スタート待
+		difficulty = 0
+		if mouse_c == 1:
+			if 168 < mouse_x < 456 and 384 < mouse_y < 456:
+				difficulty = 4
+			if 168 < mouse_x < 456 and 528 < mouse_y < 600:
+				difficulty = 5
+			if 168 < mouse_x < 456 and 672 < mouse_y < 744:
+				difficulty = 6
+		if difficulty > 0:
+			#盤面初期化
+			for y in range(10):
+				for x in range(8):
+					neko[y][x] = 0
+			mouse_c = 0
+			score = 0
+			tsugi=0
+			cursor_x = 0
+			cursor_y = 0
+			set_neko()
+			draw_neko()
+			cvs.delete("TITLE")
+			index=2
+	elif index == 2: #落下
+		if drop_neko() == False:
+			index = 3
+		draw_neko()
+	elif index == 3: # 揃ったか
+		check_neko()
+		draw_neko()
+		index = 4
+	elif index == 4: #揃ったネコがあれば消す
+		sc = sweep_neko()
+		#score = score + sc*10
+		score = score + sc*difficulty*2
+		if score > hisc:
+			hisc = score
+		if sc > 0:
+			index = 2
+		else:
+			if over_neko() == False:
+				#tsugi = random.randint(1,6)
+				tsugi = random.randint(1,difficulty)
+				index=5
+			else:
+				index = 6
+				timer = 0
+		draw_neko()
+	elif index == 5: # マウス入力を待つ
+		if 24 <= mouse_x < 24+72*8 and 24 <= mouse_y <24+72*10:
+			cursor_x = int((mouse_x-24)/72)
+			cursor_y = int((mouse_y-24)/72)
+			if mouse_c == 1:
+				mouse_c =0
+				set_neko()
+				neko[cursor_y][cursor_x] = tsugi
+				tsugi = 0
+				index = 2
+		cvs.delete("CURSOR")
+		cvs.create_image(cursor_x*72+60,cursor_y*72+60,image=cursor,tag="CURSOR")
+		draw_neko()
+	elif index == 6: #ゲームオーバー
+		timer += 1
+		if timer== 1:
+			draw_txt("GAME OVER",312,348,60,"red","OVER")
+		if timer == 50:
+			cvs.delete("OVER")
+			index=0
+	cvs.delete("INFO")
+	draw_txt(f"SCORE {score}",160,60,32,"blue","INFO")
+	draw_txt(f"HICS {hisc}",450,60,32,"yellow","INFO")
+	if tsugi > 0:
+		cvs.create_image(752,128,image=img_neko[tsugi],tag="INFO")
+	root.after(100,game_main)
 
-    # 新しいぷよを追加
-    if len(puyo_group) == 0 or not any(puyo.falling for puyo in puyo_group.sprites()):
-        puyo1 = Puyo(random.choice(PuyoColors), 2, 0)
-        puyo2 = Puyo(random.choice(PuyoColors), 3, 0)
-        puyo_group.add(puyo1, puyo2)
+root = tk.Tk()
+root.title("落ち物パズル ねこねこ")
+root.resizable(False, False)
+root.bind("<Motion>", mouse_move)
+root.bind("<ButtonPress>", mouse_press)
+cvs = tk.Canvas(root, width=912, height=768)
+cvs.pack()
 
-    # ぷよの落下
-    for puyo in puyo_group.sprites():
-        puyo.move_down()
+bg = tk.PhotoImage(file="neko_bg.png")
+cursor = tk.PhotoImage(file="neko_cursor.png")
+img_neko = [
+	None,
+	tk.PhotoImage(file="g.png"),
+	tk.PhotoImage(file="r.png"),
+	tk.PhotoImage(file="y.png"),
+	tk.PhotoImage(file="b.png"),
+	tk.PhotoImage(file="p.png"),
+	tk.PhotoImage(file="neko6.png"),
+	tk.PhotoImage(file="neko_niku.png")
+]
 
-    # フィールドへのぷよの追加
-    for puyo in puyo_group.sprites():
-        if not puyo.falling:
-            x_index = puyo.rect.x // CELL_SIZE
-            y_index = puyo.rect.y // CELL_SIZE
-            field[y_index][x_index] = puyo.color
-
-    # 画面のクリア
-    screen.fill((0, 0, 0))
-
-    # ぷよの描画
-    for puyo in puyo_group.sprites():
-        puyo.draw(screen)
-
-    # 画面の更新
-    pygame.display.flip()
-    clock.tick(10)  # 落下速度
-
-pygame.quit()
-
+cvs.create_image(456, 384, image=bg)
+#2行削除
+game_main()
+root.mainloop()
