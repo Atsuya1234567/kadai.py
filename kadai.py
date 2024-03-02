@@ -97,12 +97,12 @@ def game_main():
 	global index,timer,score,tsugi,hisc,difficulty
 	global cursor_x,cursor_y,mouse_c
 	if index == 0: # タイトルロゴ
-		draw_txt("リアぷよ",312,240,100,"violet","TITLE")
-		cvs.create_rectangle(168, 384, 456, 456, fill="skyblue", width=0, tag="TITLE")
+		draw_txt("リアぷよ",312,240,100,"white","TITLE")
+		cvs.create_rectangle(168, 384, 456, 456, fill="yellow", width=0, tag="TITLE")
 		draw_txt("甘口", 312, 420, 40, "white", "TITLE")
-		cvs.create_rectangle(168, 528, 456, 600, fill="lightgreen", width=0, tag="TITLE")
+		cvs.create_rectangle(168, 528, 456, 600, fill="orange", width=0, tag="TITLE")
 		draw_txt("中辛", 312, 564, 40, "white", "TITLE")
-		cvs.create_rectangle(168, 672, 456, 744, fill="orange", width=0, tag="TITLE")
+		cvs.create_rectangle(168, 672, 456, 744, fill="red", width=0, tag="TITLE")
 		draw_txt("辛口", 312, 708, 40, "white", "TITLE")
 		index = 1
 		mouse_c =0
@@ -170,13 +170,13 @@ def game_main():
 	elif index == 6: #ゲームオーバー
 		timer += 1
 		if timer== 1:
-			draw_txt("GAME OVER",312,348,60,"red","OVER")
+			draw_txt("ばたんきゅ～",312,348,60,"white","OVER")
 		if timer == 50:
 			cvs.delete("OVER")
 			index=0
 	cvs.delete("INFO")
-	draw_txt(f"SCORE {score}",160,60,32,"blue","INFO")
-	draw_txt(f"HICS {hisc}",450,60,32,"yellow","INFO")
+	draw_txt(f"スコア {score}",160,60,32,"white","INFO")
+	draw_txt(f"ハイスコア {hisc}",450,60,32,"white","INFO")
 	if tsugi > 0:
 		cvs.create_image(752,128,image=img_neko[tsugi],tag="INFO")
 	root.after(100,game_main)
@@ -197,7 +197,7 @@ img_neko = [
 	tk.PhotoImage(file="b.png"),
 	tk.PhotoImage(file="p.png"),
     tk.PhotoImage(file="s.png"),
-	tk.PhotoImage(file="w.png")
+	tk.PhotoImage(file="k.png")
 ]
 cvs.create_image(456, 384, image=bg)
 #2行削除
