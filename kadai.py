@@ -1,19 +1,16 @@
 import tkinter as tk
 import random
-
 index=0 #ゲームの進行状況を管理
 timer=0 #ゲームオーバー時に時間に5秒止める処理に使う
 score=0 #点数を管理
 hisc=1000 #ハイスコア
 difficulty=0 #難易度
 tsugi=0 #次に出てくるネコの番号
-
 cursor_x = 0
 cursor_y = 0
 mouse_x = 0
 mouse_y = 0
 mouse_c = 0
-
 def mouse_move(e):
 	global mouse_x, mouse_y
 	mouse_x = e.x
@@ -22,26 +19,22 @@ def mouse_move(e):
 def mouse_press(e):
 		global mouse_c
 		mouse_c = 1
-
 neko = []
 check = []
 for i in range(10):
 	neko.append([0, 0, 0, 0, 0, 0, 0, 0])
 	check.append([0, 0, 0, 0, 0, 0, 0, 0])
-
 def draw_neko():
 	cvs.delete("NEKO")
 	for y in range(10):
 		for x in range(8):
 			if neko[y][x] > 0:
 				cvs.create_image(x*72+60, y*72+60, image=img_neko[neko[y][x]], tag="NEKO")
-
 def check_neko():
 	#盤面のコピー
 	for y in range(10):
 		for x in range(8):
 			check[y][x] = neko[y][x]
-
 	#縦方向3並びチェック
 	for y in range(1,9):
 		for x in range(8):
@@ -61,7 +54,6 @@ def check_neko():
 				if check[y-1][x-1] == check[y][x] == check[y+1][x+1]:					neko[y-1][x-1] = neko[y][x] = neko[y+1][x+1] = 7
 				if check[y-1][x+1] == check[y][x] == check[y+1][x-1]:
 					neko[y-1][x+1] = neko[y][x] = neko[y+1][x-1] = 7
-
 # 揃ったマスを空白にし、揃ったマスの個数を返す
 def sweep_neko():
 	num = 0
@@ -71,8 +63,6 @@ def sweep_neko():
 				neko[y][x] = 0
 				num += 1
 	return num
-
-
 # すべてのマスに対して下に１個移動できるかをチェックし、
 # 移動できた場合は下に移動する。
 # 移動できた場合はTrueを返す
@@ -85,39 +75,35 @@ def drop_neko():
 				neko[y][x]=0
 				flg = True
 	return flg
-
 # 最上段にネコマスがあったらTrueを返す
 def over_neko():
 	for x in range(8):
 		if neko[0][x] > 0:
 			return True
 	return False
-
 # 最上段にランダムでネコをセットする(0は空欄)
 def set_neko():
 	for x in range(8):
 		#neko[0][x] = random.randint(0,6)
 		neko[0][x] = random.randint(0,difficulty)
-
 # 文言を表示する
 def draw_txt(txt,x,y,size,color,tg):
 	fnt = ("Times New Roman" ,size,"bold")
 	#2ピクセルずらして影を描画
 	cvs.create_text(x+2,y+2,text=txt,fill="black",font=fnt,tag=tg)
 	cvs.create_text(x,y,text=txt,fill=color,font=fnt,tag=tg)
-
 def game_main():
 	#global index,timer,score,tsugi
 	global index,timer,score,tsugi,hisc,difficulty
 	global cursor_x,cursor_y,mouse_c
 	if index == 0: # タイトルロゴ
-		draw_txt("ねこねこ",312,240,100,"violet","TITLE")
+		draw_txt("リアぷよ",312,240,100,"violet","TITLE")
 		cvs.create_rectangle(168, 384, 456, 456, fill="skyblue", width=0, tag="TITLE")
-		draw_txt("Easy", 312, 420, 40, "white", "TITLE")
+		draw_txt("甘口", 312, 420, 40, "white", "TITLE")
 		cvs.create_rectangle(168, 528, 456, 600, fill="lightgreen", width=0, tag="TITLE")
-		draw_txt("Normal", 312, 564, 40, "white", "TITLE")
+		draw_txt("中辛", 312, 564, 40, "white", "TITLE")
 		cvs.create_rectangle(168, 672, 456, 744, fill="orange", width=0, tag="TITLE")
-		draw_txt("Hard", 312, 708, 40, "white", "TITLE")
+		draw_txt("辛口", 312, 708, 40, "white", "TITLE")
 		index = 1
 		mouse_c =0
 	elif index == 1: # タイトル画面 スタート待
@@ -194,7 +180,6 @@ def game_main():
 	if tsugi > 0:
 		cvs.create_image(752,128,image=img_neko[tsugi],tag="INFO")
 	root.after(100,game_main)
-
 root = tk.Tk()
 root.title("落ち物パズル ねこねこ")
 root.resizable(False, False)
@@ -202,8 +187,7 @@ root.bind("<Motion>", mouse_move)
 root.bind("<ButtonPress>", mouse_press)
 cvs = tk.Canvas(root, width=912, height=768)
 cvs.pack()
-
-bg = tk.PhotoImage(file="neko_bg.png")
+bg = tk.PhotoImage(file="u.png")
 cursor = tk.PhotoImage(file="neko_cursor.png")
 img_neko = [
 	None,
@@ -212,10 +196,9 @@ img_neko = [
 	tk.PhotoImage(file="y.png"),
 	tk.PhotoImage(file="b.png"),
 	tk.PhotoImage(file="p.png"),
-	tk.PhotoImage(file="neko6.png"),
-	tk.PhotoImage(file="neko_niku.png")
+    tk.PhotoImage(file="s.png"),
+	tk.PhotoImage(file="w.png")
 ]
-
 cvs.create_image(456, 384, image=bg)
 #2行削除
 game_main()
