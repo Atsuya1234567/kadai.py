@@ -188,7 +188,7 @@ root.bind("<ButtonPress>", mouse_press)
 cvs = tk.Canvas(root, width=912, height=768)
 cvs.pack()
 bg = tk.PhotoImage(file="u.png")
-cursor = tk.PhotoImage(file="c.png")
+cursor = tk.PhotoImage(file="c2.png")
 img_neko = [
 	None,
 	tk.PhotoImage(file="g.png"),
@@ -197,7 +197,7 @@ img_neko = [
 	tk.PhotoImage(file="b.png"),
 	tk.PhotoImage(file="p.png"),
     tk.PhotoImage(file="s.png"),
-	tk.PhotoImage(file="k.png")
+	tk.PhotoImage(file="k3.png")
 ]
 cvs.create_image(456, 384, image=bg)
 #2行削除
