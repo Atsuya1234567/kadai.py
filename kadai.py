@@ -88,9 +88,9 @@ def set_neko():
 		neko[0][x] = random.randint(0,difficulty)
 # 文言を表示する
 def draw_txt(txt,x,y,size,color,tg):
-	fnt = ("Times New Roman" ,size,"bold")
+	fnt = ("HGS創英角ﾎﾟｯﾌﾟ体 標準" ,size,"bold")
 	#2ピクセルずらして影を描画
-	cvs.create_text(x+2,y+2,text=txt,fill="black",font=fnt,tag=tg)
+	cvs.create_text(x+5,y+5,text=txt,fill="black",font=fnt,tag=tg)
 	cvs.create_text(x,y,text=txt,fill=color,font=fnt,tag=tg)
 def game_main():
 	#global index,timer,score,tsugi
@@ -181,7 +181,7 @@ def game_main():
 		cvs.create_image(768,150,image=img_neko[tsugi],tag="INFO")
 	root.after(100,game_main)
 root = tk.Tk()
-root.title("リアぷよ")
+root.title("リアぷよ ~ちょっとリアルなぷよぷよ~")
 root.resizable(False, False)
 root.bind("<Motion>", mouse_move)
 root.bind("<ButtonPress>", mouse_press)
@@ -197,7 +197,7 @@ img_neko = [
 	tk.PhotoImage(file="b.png"),
 	tk.PhotoImage(file="p.png"),
     tk.PhotoImage(file="s.png"),
-	tk.PhotoImage(file="k3.png")
+	tk.PhotoImage(file="k4.png")
 ]
 cvs.create_image(456, 384, image=bg)
 #2行削除
