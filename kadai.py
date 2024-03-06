@@ -152,8 +152,7 @@ def game_main():
             if rensa > 0:
                 cvs.delete("REN")
                 draw_txt(f"{rensa}連鎖！",783,350,32,"white","REN")
-                cvs.create_image(770,500,image=img_ren,tag="RENIMG")
-            if rensa >= 2:
+            if rensa > 1:
                 cvs.create_image(770,500,image=img_ren,tag="RENIMG")
             if rensa == 2:
                 cvs.create_image(685,460,image=img_ren2,tag="REN2")
@@ -161,8 +160,10 @@ def game_main():
             if rensa == 3:
                 cvs.delete("REN2")
                 cvs.create_image(680,470,image=img_ren3,tag="REN3")
+                cvs.create_image(315,350,image=img_ren3_2,tag="REN3_2")
             if rensa == 4:
                 cvs.delete("REN3")
+                cvs.delete("REN3_2")
                 cvs.create_image(765,480,image=img_ren4,tag="REN4")
             if rensa == 5:
                 cvs.delete("REN4")
@@ -170,8 +171,10 @@ def game_main():
             if rensa == 6:
                 cvs.delete("REN5")
                 cvs.create_image(680,450,image=img_ren6,tag="REN6")
+                cvs.create_image(310,350,image=img_ren6_2,tag="REN6_2")
             if rensa >= 7:
                 cvs.delete("REN6")
+                cvs.delete("REN6_2")
                 cvs.delete("REN7")
                 cvs.create_image(680,540,image=img_ren7,tag="REN7")
             index = 2
@@ -194,9 +197,11 @@ def game_main():
                 cvs.delete("REN")
                 cvs.delete("REN2")
                 cvs.delete("REN3")
+                cvs.delete("REN3_2")
                 cvs.delete("REN4")
                 cvs.delete("REN5")
                 cvs.delete("REN6")
+                cvs.delete("REN6_2")
                 cvs.delete("REN7")
                 cvs.delete("RENIMG")
                 mouse_c =0
@@ -254,11 +259,15 @@ img_ren2= tk.PhotoImage(file="f.png").subsample(4)
 cvs.create_image(456, 384, image=bg)
 img_ren3= tk.PhotoImage(file="i.png").subsample(4)
 cvs.create_image(456, 384, image=bg)
+img_ren3_2= tk.PhotoImage(file="i2.png")
+cvs.create_image(456, 384, image=bg)
 img_ren4= tk.PhotoImage(file="d.png").subsample(3)
 cvs.create_image(456, 384, image=bg)
 img_ren5= tk.PhotoImage(file="5b.png").subsample(5)
 cvs.create_image(456, 384, image=bg)
 img_ren6= tk.PhotoImage(file="m.png").subsample(4)
+cvs.create_image(456, 384, image=bg)
+img_ren6_2= tk.PhotoImage(file="m.png")
 cvs.create_image(456, 384, image=bg)
 img_ren7= tk.PhotoImage(file="7b.png").subsample(2)
 cvs.create_image(456, 384, image=bg)
